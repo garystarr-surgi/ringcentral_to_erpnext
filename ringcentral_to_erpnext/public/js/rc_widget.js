@@ -23,7 +23,7 @@
 
   // ─── CONFIGURATION ──────────────────────────────────────────────────────────
 
-  var RC_CLIENT_ID = 'YOUR_RC_CLIENT_ID_HERE'; // ← replace this
+  var RC_CLIENT_ID = '4kv6Zgevxa2cpSpbOpieOD'; // ← replace this
   var SERVICE_NAME = 'SurgiShopCRM';
   var FRAPPE_SITE  = window.location.origin;    // e.g. https://crm.surgishop.com
 
