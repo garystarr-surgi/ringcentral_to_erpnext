@@ -34,3 +34,10 @@ def _ensure_module_def():
 
 def _register_in_module_app():
     """
+    frappe.reload_doc resolves module paths via frappe.local.module_app.
+    If Module Def was missing, that mapping is unpopulated for this request.
+    Patch it in-process so reload_doc can find the right file path.
+    """
+    if not hasattr(frappe.local, "module_app") or frappe.local.module_app is None:
+        frappe.local.module_app = {}
+    frappe.local.module_app[_MODULE_KEY] = _APP
