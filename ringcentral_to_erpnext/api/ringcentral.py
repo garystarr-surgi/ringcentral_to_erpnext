@@ -59,12 +59,13 @@ def get_token():
 
 @frappe.whitelist(allow_guest=True)
 def handle_request(**kwargs):
-    # Validation is now handled by the /rc-webhook website page which can
-    # set response headers properly. This endpoint only receives POST events.
+    # RC sends a GET with Validation-Token to verify our endpoint.
+    # We stash the token in frappe.flags; the patched as_json() in install.py
+    # adds it as an actual HTTP response header before the response is sent.
     validation_token = frappe.request.headers.get("Validation-Token")
     if validation_token:
+        frappe.flags.rc_validation_token = validation_token
         frappe.response["http_status_code"] = 200
-        frappe.response["message"] = validation_token
         return validation_token
 
     settings = _get_settings()

@@ -37,8 +37,41 @@ def patch_module_app():
     before_request hook — runs on every request.
     Ensures our module is in frappe.local.module_app even when Module Def
     is absent from the database, preventing 500 errors on desk load.
+    Also patches frappe.utils.response.as_json once per worker process so
+    RC webhook validation can receive the Validation-Token response header.
     """
     _register_in_module_app()
+    _patch_as_json()
+
+
+def _patch_as_json():
+    """Patch frappe.utils.response.as_json once per gunicorn worker.
+
+    frappe.utils.response.build_response() resolves 'as_json' via the
+    module's own globals at call-time (not at import-time), so replacing
+    the name in the module dict is enough to intercept every future call
+    without touching handler.py's cached reference to build_response.
+
+    The patch is a no-op on every request except the RC validation GET,
+    where handle_request sets frappe.flags.rc_validation_token.
+    """
+    try:
+        import frappe.utils.response as _resp_mod
+        if getattr(_resp_mod, "_rc_patch_applied", False):
+            return
+        _orig_as_json = _resp_mod.as_json
+
+        def _patched_as_json():
+            response = _orig_as_json()
+            token = getattr(frappe.flags, "rc_validation_token", None)
+            if token and hasattr(response, "headers"):
+                response.headers["Validation-Token"] = token
+            return response
+
+        _resp_mod.as_json = _patched_as_json
+        _resp_mod._rc_patch_applied = True
+    except Exception:
+        pass
 
 
 
