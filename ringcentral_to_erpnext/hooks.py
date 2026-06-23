@@ -11,6 +11,11 @@ after_sync = "ringcentral_to_erpnext.install.after_migrate"
 
 before_request = ["ringcentral_to_erpnext.install.patch_module_app"]
 
+# Map hyphenated alias → underscore filename (Frappe derives routes from filenames)
+website_route_rules = [
+    {"from_route": "/rc-webhook", "to_route": "rc_webhook"},
+]
+
 # ── Tell Frappe CRM that RingCentral is a telephony provider ─────────────────
 # Frappe CRM reads this hook to populate the "Provider" dropdown in
 # Telephony Settings and to route get_token / handle_request calls.

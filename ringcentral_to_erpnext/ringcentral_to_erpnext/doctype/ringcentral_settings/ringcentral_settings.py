@@ -49,7 +49,7 @@ def register_webhook():
     # Use the /rc-webhook website page — its response pipeline (website/serve.py)
     # copies frappe.local.response["headers"] into real HTTP headers, allowing
     # us to echo the Validation-Token header that RC requires.
-    webhook_url = f"{get_url()}/rc-webhook?key={settings.webhook_verify_token}"
+    webhook_url = f"{get_url()}/rc_webhook?key={settings.webhook_verify_token}"
 
     # Create the subscription
     try:

@@ -2,6 +2,7 @@ import json
 import frappe
 
 no_cache = 1
+allow_guest = 1
 
 
 def get_context(context):
