@@ -59,13 +59,14 @@ def get_token():
 
 @frappe.whitelist(allow_guest=True)
 def handle_request(**kwargs):
-    # RC sends a GET with Validation-Token to confirm the endpoint on subscription
-    # creation. Answer this immediately — before any other checks — or RC gets 417.
+    # RC sends a GET with Validation-Token header to confirm the endpoint exists.
+    # RC requires that same token echoed back in the *response* Validation-Token
+    # header (not the body). Must run before any other checks to avoid 417.
     validation_token = frappe.request.headers.get("Validation-Token")
     if validation_token:
         frappe.response["http_status_code"] = 200
-        frappe.response["message"] = validation_token
-        return validation_token
+        frappe.response["headers"] = {"Validation-Token": validation_token}
+        return ""
 
     settings = _get_settings()
 
