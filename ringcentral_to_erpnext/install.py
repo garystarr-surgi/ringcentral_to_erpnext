@@ -41,6 +41,22 @@ def patch_module_app():
     _register_in_module_app()
 
 
+def add_rc_validation_header(response=None, **kwargs):
+    """
+    after_request hook — Frappe passes the Werkzeug Response object here.
+    If handle_request stashed a Validation-Token in frappe.flags, set it
+    as a real HTTP response header so RC's subscription validation passes.
+    """
+    token = getattr(frappe.flags, "rc_validation_token", None)
+    if not token:
+        return
+    if response is not None and hasattr(response, "headers"):
+        try:
+            response.headers["Validation-Token"] = token
+        except Exception:
+            pass
+
+
 def _register_in_module_app():
     module_map = getattr(frappe.local, "module_app", None)
     if module_map is None:
