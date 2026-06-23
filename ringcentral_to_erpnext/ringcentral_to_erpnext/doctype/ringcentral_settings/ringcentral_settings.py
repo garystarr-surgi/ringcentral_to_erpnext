@@ -59,7 +59,7 @@ def register_webhook():
             f"{api_base}/restapi/v1.0/subscription",
             json={
                 "eventFilters": [
-                    "/restapi/v1.0/account/~/extension/~/telephony/sessions"
+                    "/restapi/v1.0/account/~/telephony/sessions"
                 ],
                 "deliveryMode": {
                     "transportType": "WebHook",
