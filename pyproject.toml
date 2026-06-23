@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "surgishop_crm"
+name = "ringcentral_to_erpnext"
 version = "0.0.1"
 description = "Connect RingcCentral to ERPNext"
 authors = [
