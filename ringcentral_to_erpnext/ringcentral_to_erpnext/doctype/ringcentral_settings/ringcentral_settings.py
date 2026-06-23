@@ -69,9 +69,13 @@ def register_webhook():
         )
         sub_resp.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        body = e.response.text if e.response else str(e)
-        frappe.log_error(f"RC subscription error: {body}", "RC Webhook")
-        frappe.throw(_(f"RingCentral rejected the subscription: {body}"))
+        status = e.response.status_code if e.response is not None else "?"
+        try:
+            body = e.response.json() if e.response is not None else str(e)
+        except Exception:
+            body = e.response.text if e.response is not None else str(e)
+        frappe.log_error(f"RC subscription {status}: {body}", "RC Webhook")
+        frappe.throw(_(f"RingCentral rejected the subscription ({status}): {body}"))
     except Exception as e:
         frappe.log_error(f"RC subscription error: {e}", "RC Webhook")
         frappe.throw(_("Failed to create webhook subscription. Check Error Log."))
