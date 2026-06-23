@@ -9,6 +9,8 @@ after_install = "ringcentral_to_erpnext.install.after_install"
 after_migrate = "ringcentral_to_erpnext.install.after_migrate"
 after_sync = "ringcentral_to_erpnext.install.after_migrate"
 
+before_request = ["ringcentral_to_erpnext.install.patch_module_app"]
+
 # ── Tell Frappe CRM that RingCentral is a telephony provider ─────────────────
 # Frappe CRM reads this hook to populate the "Provider" dropdown in
 # Telephony Settings and to route get_token / handle_request calls.

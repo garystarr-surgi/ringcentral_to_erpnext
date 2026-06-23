@@ -32,12 +32,18 @@ def _ensure_module_def():
         frappe.db.commit()
 
 
+def patch_module_app():
+    """
+    before_request hook — runs on every request.
+    Ensures our module is in frappe.local.module_app even when Module Def
+    is absent from the database, preventing 500 errors on desk load.
+    """
+    _register_in_module_app()
+
+
 def _register_in_module_app():
-    """
-    frappe.reload_doc resolves module paths via frappe.local.module_app.
-    If Module Def was missing, that mapping is unpopulated for this request.
-    Patch it in-process so reload_doc can find the right file path.
-    """
-    if not hasattr(frappe.local, "module_app") or frappe.local.module_app is None:
+    module_map = getattr(frappe.local, "module_app", None)
+    if module_map is None:
         frappe.local.module_app = {}
-    frappe.local.module_app[_MODULE_KEY] = _APP
+    if _MODULE_KEY not in frappe.local.module_app:
+        frappe.local.module_app[_MODULE_KEY] = _APP
