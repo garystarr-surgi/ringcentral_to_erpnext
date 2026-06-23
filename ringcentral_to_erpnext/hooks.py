@@ -7,6 +7,7 @@ app_license = "MIT"
 
 after_install = "ringcentral_to_erpnext.install.after_install"
 after_migrate = "ringcentral_to_erpnext.install.after_migrate"
+after_sync = "ringcentral_to_erpnext.install.after_migrate"
 
 # ── Tell Frappe CRM that RingCentral is a telephony provider ─────────────────
 # Frappe CRM reads this hook to populate the "Provider" dropdown in
