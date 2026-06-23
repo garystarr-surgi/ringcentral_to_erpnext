@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='surgishop_crm',
+    name='ringcentral_to_erpnext',
     version='0.0.1',
     description='Connect RingCentral to ERPNext',
     author='SurgiShop',
