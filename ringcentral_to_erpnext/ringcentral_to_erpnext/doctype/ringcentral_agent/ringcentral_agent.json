@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "autoname": "field:user",
+ "creation": "2025-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "enabled",
+  "rc_extension_id",
+  "rc_phone_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Frappe User",
+   "options": "User",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rc_extension_id",
+   "fieldtype": "Data",
+   "label": "RC Extension ID",
+   "description": "Found in RC Admin Console → Users → Extension Number. Used to match inbound webhook events to Frappe users.",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rc_phone_number",
+   "fieldtype": "Data",
+   "label": "RC Direct Number",
+   "description": "E.164 format e.g. +17275551234. Used for outbound caller ID.",
+   "in_list_view": 1
+  }
+ ],
+ "links": [],
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Ringcentral To Erpnext",
+ "name": "RingCentral Agent",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "user"
+}
