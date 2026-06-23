@@ -12,6 +12,8 @@
   "jwt_token",
   "section_webhook",
   "webhook_verify_token",
+  "webhook_subscription_id",
+  "register_webhook",
   "section_options",
   "enable_call_recording",
   "auto_log_calls"
@@ -60,7 +62,19 @@
    "fieldname": "webhook_verify_token",
    "fieldtype": "Data",
    "label": "Webhook Verify Token",
-   "description": "Set any secret string here and use it as the ?key= parameter in your RC webhook subscription URL."
+   "description": "Set any secret string here. It is used to authenticate incoming RC webhook calls."
+  },
+  {
+   "fieldname": "webhook_subscription_id",
+   "fieldtype": "Data",
+   "label": "Webhook Subscription ID",
+   "read_only": 1,
+   "description": "Set automatically when you click Register Webhook."
+  },
+  {
+   "fieldname": "register_webhook",
+   "fieldtype": "Button",
+   "label": "Register Webhook with RingCentral"
   },
   {
    "fieldname": "section_options",
@@ -82,7 +96,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2025-01-01 00:00:00.000000",
+ "modified": "2026-06-23 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Ringcentral To Erpnext",
  "name": "RingCentral Settings",
