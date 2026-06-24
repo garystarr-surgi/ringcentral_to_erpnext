@@ -16,14 +16,10 @@ website_route_rules = [
     {"from_route": "/rc-webhook", "to_route": "rc_webhook"},
 ]
 
-# ── Tell Frappe CRM that RingCentral is a telephony provider ─────────────────
-# Frappe CRM reads this hook to populate the "Provider" dropdown in
-# Telephony Settings and to route get_token / handle_request calls.
-telephony_providers = [
-    {
-        "name": "RingCentral",
-        "module": "ringcentral_to_erpnext.api.ringcentral",
-        "get_token": "get_token",
-        "handle_request": "handle_request",
-    }
-]
+# Extend Frappe CRM's hardcoded Twilio/Exotel telephony discovery.
+# CRM frontend still needs the patch in crm_patches/ — see CRM_TELEPHONY.md.
+override_whitelisted_methods = {
+    "crm.integrations.api.is_call_integration_enabled": (
+        "ringcentral_to_erpnext.integrations.crm.is_call_integration_enabled"
+    ),
+}

@@ -167,7 +167,7 @@ def _create_call_log(session_id, from_number, to_number, direction,
         "status":        status,
         "start_time":    start_time,
         "recording_url": recording_url,
-        "telephony_provider": "RingCentral",
+        "telephony_medium": "RingCentral",
     })
     if contact_name:
         doc.contact = contact_name
@@ -244,6 +244,82 @@ def get_settings():
         "enabled":     settings.enabled,
         "client_id":   settings.client_id,
         "use_sandbox": settings.use_sandbox,
+    }
+
+
+def _rc_api_base(settings):
+    return (
+        "https://platform.devtest.ringcentral.com"
+        if settings.use_sandbox
+        else "https://platform.ringcentral.com"
+    )
+
+
+def _get_access_token(settings):
+    token_url = (
+        f"{_rc_api_base(settings)}/restapi/oauth/token"
+    )
+    resp = requests.post(
+        token_url,
+        data={
+            "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "assertion": settings.get_password("jwt_token"),
+        },
+        auth=(settings.client_id, settings.get_password("client_secret")),
+        timeout=10,
+    )
+    resp.raise_for_status()
+    return resp.json()["access_token"]
+
+
+@frappe.whitelist()
+def make_ring_out_call(to_number: str):
+    """Place an outbound call via RingCentral RingOut (rings the agent, then the customer)."""
+    settings = _get_settings()
+    agent = frappe.db.get_value(
+        "RingCentral Agent",
+        {"user": frappe.session.user, "enabled": 1},
+        ["rc_phone_number", "rc_extension_id"],
+        as_dict=True,
+    )
+    if not agent:
+        frappe.throw(_("No enabled RingCentral Agent record found for your user."))
+
+    from_number = agent.rc_phone_number
+    if not from_number:
+        frappe.throw(_("Set your RC Direct Number on your RingCentral Agent record."))
+
+    try:
+        token = _get_access_token(settings)
+    except requests.exceptions.RequestException as e:
+        frappe.log_error(f"RingCentral RingOut token failed: {e}", "RC RingOut")
+        frappe.throw(_("Could not retrieve RingCentral token. Check credentials."))
+
+    extension = agent.rc_extension_id or "~"
+    url = f"{_rc_api_base(settings)}/restapi/v1.0/account/~/extension/{extension}/ring-out"
+    try:
+        resp = requests.post(
+            url,
+            json={
+                "from": {"phoneNumber": from_number},
+                "to": {"phoneNumber": to_number},
+                "playPrompt": False,
+            },
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        body = getattr(getattr(e, "response", None), "text", str(e))
+        frappe.log_error(f"RingCentral RingOut failed: {body}", "RC RingOut")
+        frappe.throw(_("RingCentral could not place the call. Check Error Log for details."))
+
+    data = resp.json()
+    return {
+        "id": data.get("id"),
+        "status": (data.get("status") or {}).get("callStatus"),
+        "to": to_number,
+        "from": from_number,
     }
 
 

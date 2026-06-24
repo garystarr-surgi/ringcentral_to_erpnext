@@ -19,7 +19,40 @@ def _bootstrap():
     _register_in_module_app()
     for dt in _DOCTYPES:
         frappe.reload_doc(_MODULE_KEY, "doctype", dt, force=True)
+    _ensure_crm_property_setters()
     frappe.db.commit()
+
+
+def _ensure_crm_property_setters():
+    """Allow RingCentral in CRM telephony Select fields (backend validation)."""
+    if not frappe.db.exists("DocType", "CRM Telephony Agent"):
+        return
+    _append_select_option("CRM Telephony Agent", "default_medium", "RingCentral")
+    if frappe.db.exists("DocType", "CRM Call Log"):
+        _append_select_option("CRM Call Log", "telephony_medium", "RingCentral")
+
+
+def _append_select_option(doctype, fieldname, option):
+    meta = frappe.get_meta(doctype)
+    field = meta.get_field(fieldname)
+    if not field:
+        return
+    options = [o for o in (field.options or "").split("\n") if o]
+    if option in options:
+        return
+    options.append(option)
+    frappe.make_property_setter(
+        {
+            "doctype": "Property Setter",
+            "doctype_or_field": "DocField",
+            "doc_type": doctype,
+            "field_name": fieldname,
+            "property": "options",
+            "value": "\n".join(options),
+            "property_type": "Text",
+        },
+        ignore_validate=True,
+    )
 
 
 def _ensure_module_def():
