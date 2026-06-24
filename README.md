@@ -89,11 +89,17 @@ populated.
 
 ## Step 5 — Enable RingCentral in Frappe CRM Telephony Settings
 
-1. In Frappe CRM → top-left menu → **Settings** → **Telephony**
-2. Set **Provider** to `RingCentral`
-3. Save
+> **Important:** Frappe CRM only lists Twilio and Exotel out of the box. Apply the CRM fork
+> patch in [`crm_patches/README.md`](crm_patches/README.md) (or
+> [`CRM_TELEPHONY.md`](CRM_TELEPHONY.md)), then deploy the latest version of this app.
 
-The call button will now appear on Lead / Deal / Contact pages.
+1. Fork [frappe/crm](https://github.com/frappe/crm) and apply `crm_patches/0001-ringcentral-telephony-support.patch`
+2. Point your Frappe Cloud bench CRM app at your fork and redeploy
+3. Deploy the latest `ringcentral_to_erpnext` and run **In-Place Migration**
+4. In **Frappe CRM** (`/crm`) → **Settings** → **Telephony** → set **Default Medium** to `RingCentral`
+5. Save
+
+The call button on Lead / Deal / Contact pages will use RingCentral RingOut once both patches are deployed.
 
 ---
 
